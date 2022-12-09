@@ -1,0 +1,62 @@
+node add1(a,b,c_in : bool) returns (s,c_out : bool);
+
+let
+  s = a xor b xor c_in ;
+  c_out = if (a and b) or (c_in and (a or b)) then 1 else 0 ;
+tel
+
+
+
+node add4(a0,a1,a2,a3,b0,b1,b2,b3:bool) returns (s0,s1,s2,s3,carry:bool);
+var c1:bool; c2:bool; c3:bool;
+let
+  (s0, c1) = add1(a0, b0, false);
+  (s1, c2) = add1(a1, b1, c1);
+  (s2, c3) = add1(a2, b2, c2);
+  (s3, carry) = add1(a3, b3, c3);
+tel
+
+
+node edge(input : bool) returns (output : bool);
+let
+  output = false -> (input and not( pre(input) ) ) or (not(input) and pre(input) );
+tel
+
+
+node counter(reset : bool) returns (count : int);
+var begin_value:int ;
+let
+  begin_value = if reset then 1 else 0;
+  count =  begin_value -> if reset then pre(count)+1 else pre(count);
+tel
+
+
+
+node osc(null:bool) returns (outputa:bool);
+let
+  outputa = true -> not(pre(outputa));
+tel
+
+
+
+node counter2(reset : bool) returns (count : int);
+var oscil:bool;
+let
+  oscil = osc(true);
+  count = current( counter(reset when oscil) );
+tel
+
+
+node controller (TL, TR, PULL: bool) returns (side, low, high: bool);
+let
+  (side, low, high) = (false, false, false) ->
+                      if not(pre(side) or pre(low) or pre(high)) then if TL then (true, false, false)
+                                                                        else (pre(side),pre(low),pre(high))
+                      else if pre(side) then if TL then (false, true, false)
+                                            else if TR then (false, false, false)
+                                                  else (pre(side),pre(low),pre(high))
+                            else if TR then (true, false, false)
+                                  else if PULL then (false, not(pre(low)) , not(pre(high))  )
+                                      else (pre(side),pre(low),pre(high))
+                      ;
+tel

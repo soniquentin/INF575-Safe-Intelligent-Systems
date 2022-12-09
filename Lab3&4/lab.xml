@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+broadcast chan AP;
+broadcast chan Aget;
+
+broadcast chan VP;
+broadcast chan Vget;
+
+broadcast chan AS;
+broadcast chan VS;
+
+
+//Contantes for PaceV
+const int AVI = 150;
+const int URI = 400;
+
+//Constants for PaceA
+const int LRI = 1000;
+const int DIFF = LRI - AVI;
+
+
+//Constants for FilterV
+const int VRP = 100;
+
+//Constants for FilterA
+const int PVARP = 100;
+</declaration>
+	<template>
+		<name x="5" y="5">HeartA</name>
+		<declaration>// Place local declarations here.
+clock x;
+
+const int L_A = 100 ;
+const int U_A = 2000 ;</declaration>
+		<location id="id0" x="-170" y="0">
+			<name x="-229" y="42">Only_state</name>
+			<label kind="invariant" x="-195" y="-42">x &lt; U_A</label>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-297" y="-34">x &gt;= L_A</label>
+			<label kind="synchronisation" x="-272" y="-8">Aget!</label>
+			<label kind="assignment" x="-272" y="8">x := 0</label>
+			<nail x="-229" y="-59"/>
+			<nail x="-229" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-110" y="-25">AP?</label>
+			<label kind="assignment" x="-110" y="-8">x := 0</label>
+			<nail x="-119" y="42"/>
+			<nail x="-119" y="-59"/>
+		</transition>
+	</template>
+	<template>
+		<name>HeartV</name>
+		<declaration>// Place local declarations here.
+clock x;
+
+const int L_V = 400 ;
+const int U_V = 2000 ;</declaration>
+		<location id="id1" x="-170" y="0">
+			<name x="-212" y="34">Only_state</name>
+			<label kind="invariant" x="-195" y="-42">x &lt; U_V</label>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-297" y="-34">x &gt;= L_V</label>
+			<label kind="synchronisation" x="-272" y="-8">Vget!</label>
+			<label kind="assignment" x="-272" y="8">x := 0</label>
+			<nail x="-229" y="-59"/>
+			<nail x="-229" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-110" y="-25">VP?</label>
+			<label kind="assignment" x="-110" y="-8">x := 0</label>
+			<nail x="-119" y="42"/>
+			<nail x="-119" y="-59"/>
+		</transition>
+	</template>
+	<template>
+		<name>FilterA</name>
+		<declaration>clock x;
+</declaration>
+		<location id="id2" x="-374" y="42">
+			<name x="-384" y="8">Listen</name>
+		</location>
+		<location id="id3" x="-76" y="42">
+			<name x="-86" y="8">Send</name>
+			<label kind="invariant" x="-86" y="59">x &lt;= 0</label>
+			<urgent/>
+		</location>
+		<location id="id4" x="-42" y="-127">
+			<name x="-52" y="-161">Wait</name>
+			<label kind="invariant" x="-52" y="-110">x &lt;= PVARP</label>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-204" y="59">AP?</label>
+			<label kind="assignment" x="-204" y="76">x := 0</label>
+			<nail x="-196" y="81"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-331" y="-136">VS?</label>
+			<label kind="assignment" x="-365" y="-119">x := 0</label>
+			<nail x="-306" y="-119"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-195" y="127">AS!</label>
+			<label kind="assignment" x="-204" y="144">x := 0</label>
+			<nail x="-187" y="127"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-34" y="-42">VP?</label>
+			<label kind="assignment" x="-42" y="-25">x := 0</label>
+			<nail x="-51" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-272" y="-59">x &gt;= PVARP</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-238" y="25">Aget?</label>
+			<label kind="assignment" x="-238" y="42">x := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>FilterV</name>
+		<declaration>clock x;</declaration>
+		<location id="id5" x="-187" y="17">
+			<name x="-197" y="-17">Listen</name>
+		</location>
+		<location id="id6" x="110" y="17">
+			<name x="100" y="-17">Send</name>
+			<label kind="invariant" x="100" y="34">x &lt;= 0</label>
+			<urgent/>
+		</location>
+		<location id="id7" x="-42" y="-136">
+			<name x="-51" y="-178">Wait</name>
+			<label kind="invariant" x="-68" y="-161">x&lt;= VRP</label>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="68" y="-136">VP?</label>
+			<label kind="assignment" x="-24" y="-123">x := 0</label>
+			<nail x="76" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-51" y="-59">VP?</label>
+			<label kind="assignment" x="-76" y="-51">x := 0</label>
+			<nail x="-52" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-169" y="-93">x &gt;= VRP</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="34" y="-85">VS!</label>
+			<label kind="assignment" x="0" y="-59">x := 0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-68" y="0">Vget?</label>
+			<label kind="assignment" x="-68" y="17">x := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>PaceA</name>
+		<declaration>clock x;
+
+const int LRI = 1000;</declaration>
+		<location id="id8" x="-1122" y="119">
+			<name x="-1147" y="136">Listen</name>
+			<label kind="invariant" x="-1164" y="153">x &lt;= DIFF</label>
+		</location>
+		<location id="id9" x="-1028" y="-8">
+			<name x="-1045" y="-51">Wait_VS</name>
+		</location>
+		<init ref="id8"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-1224" y="34">VP?</label>
+			<label kind="assignment" x="-1224" y="51">x := 0</label>
+			<nail x="-1232" y="25"/>
+			<nail x="-1232" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-1138" y="42">VP?</label>
+			<label kind="assignment" x="-1138" y="59">x := 0</label>
+			<nail x="-1088" y="59"/>
+			<nail x="-1156" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-1130" y="195">VS?</label>
+			<label kind="assignment" x="-1147" y="212">x := 0</label>
+			<nail x="-1071" y="195"/>
+			<nail x="-1173" y="195"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-1317" y="25">VS?</label>
+			<label kind="assignment" x="-1326" y="42">x := 0</label>
+			<nail x="-1283" y="-8"/>
+			<nail x="-1283" y="119"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-1020" y="119">x &gt;= DIFF</label>
+			<label kind="synchronisation" x="-960" y="93">AP!</label>
+			<label kind="assignment" x="-1003" y="136">x := 0</label>
+			<nail x="-960" y="119"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-1037" y="76">AS?</label>
+			<label kind="assignment" x="-1054" y="93">x := 0</label>
+			<nail x="-1037" y="85"/>
+		</transition>
+	</template>
+	<template>
+		<name>PaceV</name>
+		<declaration>clock x;
+clock y;
+</declaration>
+		<location id="id10" x="-612" y="-17">
+			<name x="-672" y="-26">Listen</name>
+		</location>
+		<location id="id11" x="-450" y="-17">
+			<name x="-467" y="-68">Wait_VS</name>
+			<label kind="invariant" x="-467" y="-51">x &lt;= AVI</label>
+		</location>
+		<location id="id12" x="-263" y="153">
+			<name x="-314" y="170">Heart_pb_wait</name>
+			<label kind="invariant" x="-289" y="187">y &lt;= URI</label>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-739" y="-89">VS?</label>
+			<label kind="assignment" x="-747" y="-72">y := 0</label>
+			<nail x="-714" y="-119"/>
+			<nail x="-697" y="67"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-697" y="-25">VP?</label>
+			<label kind="assignment" x="-705" y="-17">y := 0</label>
+			<nail x="-680" y="-76"/>
+			<nail x="-671" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-569" y="187">y &gt;= URI</label>
+			<label kind="synchronisation" x="-544" y="221">VP!</label>
+			<label kind="assignment" x="-578" y="204">y := 0 , x := 0</label>
+			<nail x="-382" y="187"/>
+			<nail x="-663" y="187"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-501" y="-144">x &gt;= AVI &amp;&amp; y &gt; URI</label>
+			<label kind="synchronisation" x="-442" y="-161">VP!</label>
+			<label kind="assignment" x="-467" y="-127">x := 0, y := 0</label>
+			<nail x="-306" y="-17"/>
+			<nail x="-306" y="-110"/>
+			<nail x="-637" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-544" y="25">AS?</label>
+			<label kind="assignment" x="-552" y="8">x := 0</label>
+			<nail x="-527" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-552" y="-76">AP?</label>
+			<label kind="assignment" x="-561" y="-51">x := 0</label>
+			<nail x="-544" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-543" y="93">VS?</label>
+			<label kind="assignment" x="-569" y="110">x := 0, y := 0</label>
+			<nail x="-484" y="110"/>
+			<nail x="-561" y="110"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-594" y="136">VS?</label>
+			<label kind="assignment" x="-594" y="153">x := 0, y := 0</label>
+			<nail x="-612" y="153"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-450" y="102">x&gt;= AVI &amp;&amp; y &lt; URI</label>
+			<nail x="-374" y="119"/>
+		</transition>
+	</template>
+	<template>
+		<name>Observer</name>
+		<declaration>clock x;
+
+const int t = 100;</declaration>
+		<location id="id13" x="-246" y="0">
+			<name x="-280" y="-17">A</name>
+			<label kind="invariant" x="-314" y="0">x&lt;= t</label>
+		</location>
+		<location id="id14" x="-93" y="0">
+			<name x="-51" y="-25">B</name>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<nail x="-161" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-212" y="-93">x &gt;= t</label>
+			<label kind="assignment" x="-204" y="-76">x := 0</label>
+			<nail x="-178" y="-59"/>
+		</transition>
+	</template>
+	<template>
+		<name>LRI_1</name>
+		<declaration>clock x;</declaration>
+		<location id="id15" x="-178" y="0">
+			<name x="-188" y="-34">Initial</name>
+		</location>
+		<location id="id16" x="-25" y="-8">
+			<name x="-35" y="-42">Wait</name>
+		</location>
+		<location id="id17" x="153" y="0">
+			<name x="143" y="-34">Error</name>
+		</location>
+		<init ref="id15"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-42" y="110">VP?</label>
+			<label kind="assignment" x="-51" y="93">x := 0</label>
+			<nail x="-51" y="93"/>
+			<nail x="0" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-34" y="-136">VS?</label>
+			<label kind="assignment" x="-42" y="-119">x := 0</label>
+			<nail x="-59" y="-102"/>
+			<nail x="42" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id15"/>
+			<nail x="127" y="153"/>
+			<nail x="-178" y="153"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="guard" x="42" y="-25">x &gt; LRI</label>
+			<label kind="assignment" x="51" y="0">x := 0</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-110" y="25">VP?</label>
+			<label kind="assignment" x="-119" y="42">x := 0</label>
+			<nail x="-102" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-119" y="-68">VS?</label>
+			<label kind="assignment" x="-127" y="-51">x := 0</label>
+			<nail x="-110" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>LRI_2</name>
+		<declaration>clock x;</declaration>
+		<location id="id18" x="-187" y="0">
+			<name x="-238" y="-17">Wait1</name>
+		</location>
+		<location id="id19" x="68" y="0">
+			<name x="85" y="-17">Wait2</name>
+		</location>
+		<location id="id20" x="-51" y="85">
+			<name x="-93" y="102">clock_check</name>
+			<urgent/>
+		</location>
+		<init ref="id18"/>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="assignment" x="-93" y="17">x := 0</label>
+			<nail x="-51" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="51" y="76">VS?</label>
+			<nail x="51" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="8" y="42">VP?</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-68" y="-59">VS?</label>
+			<label kind="assignment" x="-76" y="-42">x := 0</label>
+			<nail x="-119" y="-68"/>
+			<nail x="0" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-76" y="-144">VP?</label>
+			<label kind="assignment" x="-85" y="-127">x := 0</label>
+			<nail x="-127" y="-110"/>
+			<nail x="17" y="-110"/>
+		</transition>
+	</template>
+	<template>
+		<name>Liveness</name>
+		<declaration>clock x;</declaration>
+		<location id="id21" x="-637" y="-34">
+			<name x="-647" y="-68">Initial</name>
+		</location>
+		<location id="id22" x="-476" y="-34">
+			<name x="-510" y="-68">Wait_second</name>
+		</location>
+		<location id="id23" x="-331" y="-34">
+			<name x="-341" y="-68">clock_check</name>
+			<urgent/>
+		</location>
+		<init ref="id21"/>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id21"/>
+			<nail x="-374" y="59"/>
+			<nail x="-595" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-408" y="0">VS?</label>
+			<nail x="-399" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-416" y="-102">VP?</label>
+			<nail x="-400" y="-89"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-578" y="-17">AP?</label>
+			<label kind="assignment" x="-578" y="8">x := 0</label>
+			<nail x="-561" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-578" y="-102">AS?</label>
+			<label kind="assignment" x="-586" y="-68">x := 0</label>
+			<nail x="-569" y="-85"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+HA = HeartA();
+HV = HeartV();
+
+FA = FilterA();
+FV = FilterV();
+PA = PaceA();
+PV = PaceV();
+
+Obs = Observer();
+
+LR1 = LRI_1(); 
+LR2 = LRI_2();
+
+Liv = Liveness();
+
+
+// List one or more processes to be composed into a system.
+system HA,HV, FA, FV , PA, PV, LR1, LR2, Liv;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] (Liv.clock_check imply Liv.x &lt;= URI ) </formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
